@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="employee_status">
+	
+	<insert id="employee_statusRegist" parameterType="String">
+		insert into employee_status(employee_status_no,employee_status_name)
+		values(employee_status_seq.nextval,#{employee_status_name})
+	</insert>
+
+	<select id="employee_statusDetail" parameterType="String" resultType="employee_status">
+		select employee_status_no,employee_status_name from employee_status 
+		where employee_status_name = #{employee_status_name}
+	</select>
+
+	<select id="employee_statusCount" resultType="Integer" >
+		select count(employee_status_no) from employee_status
+		<if test="search_sel!=null">
+			<where>
+				<choose>
+					<when test="search_sel='employee_status_name' and search_txt!=''">
+						employee_status_name like '%' || #{search_txt} || '%'
+					</when>
+				</choose>
+			</where>
+		</if>
+	</select>
+	
+	<select id="employee_statusList" resultType="Employee_status" parameterType="java.util.HashMap">
+		select employee_status_no,employee_status_name from (
+		select rownum rnum,d.employee_status_no,d.employee_status_name
+		from(
+		select *
+		from employee_status where 1=1
+		<if test="search_sel!=null">
+			<choose>
+				<when test="search_sel == 'employee_status_name' and search_txt !=''">
+					and employee_status_name like '%' || #{search_txt} || '%'
+				</when>
+			</choose>
+		</if>
+		order by employee_status_no desc) d) 
+		<if test="startRow>0 and endRow>0">
+	 		<![CDATA[
+	         where rnum >= #{startRow} and rnum <= #{endRow} 
+			]]>
+		</if>
+	</select>	
+	
+	<update id="employee_statusUpdate"  parameterType="java.util.HashMap">
+		update employee_status set employee_status_name = #{employee_status_name}
+		where employee_status_no = #{employee_status_no}
+	</update>
+
+	<delete id="employee_statusDelete">
+		delete from employee_status 
+		where employee_status_no = #{employee_status_no}
+	</delete>
+</mapper>

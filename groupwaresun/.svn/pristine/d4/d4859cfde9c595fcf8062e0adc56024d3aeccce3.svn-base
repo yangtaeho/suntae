@@ -1,0 +1,102 @@
+package com.groupware.sun.team.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.groupware.sun.common.util.Paging;
+import com.groupware.sun.team.dao.TeamDAO;
+import com.groupware.sun.team.dto.Team;
+
+@Transactional
+@Service
+public class TeamServiceImpl implements TeamService {
+
+	@Autowired
+	private TeamDAO teamDAO;
+
+	// team(팀) 등록
+	// parameter -> team_name
+	@Override
+	public HashMap<String, Object> teamRegist(String team_name) {
+		int result = 0;
+		// db에 동일한 팀명이 있을경우 등록 불가
+		Team team = this.teamDetail(team_name);
+		if (team == null) {
+			result = teamDAO.teamRegist(team_name);
+		} else {
+			result = 0;
+		}
+		HashMap<String, Object> hashMap = resultData(result);
+		return hashMap;
+	}
+
+	// team(팀) 데이터 갯수
+	// parameter -> 검색값 search_sel,search_txt
+	@Override
+	public int teamCount(HashMap<String, Object> param) {
+		return teamDAO.teamCount(param);
+	}
+
+	// team(팀) 리스트 조회
+	// parameter -> 검색값 search_sel,search_txt,startRow,endRow
+	@Override
+	public List<Team> teamGetList(Paging paging) {
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		hashMap.put("startRow", paging.getStartRow());
+		hashMap.put("endRow", paging.getEndRow());
+		hashMap.put("search_sel", paging.getSearch_sel());
+		hashMap.put("search_txt", paging.getSearch_txt());
+		return teamDAO.teamGetList(hashMap);
+	}
+
+	// team(팀) 상세 조회
+	// parameter -> team_name
+	@Override
+	public Team teamDetail(String team_name) {
+		return teamDAO.teamDetail(team_name);
+	}
+
+	// team(팀) 수정
+	// parameter -> team_no,team_name
+	@Override
+	public HashMap<String, Object> teamUpdate(HashMap<String, Object> param) {
+		int result = 0;
+		String team_name = String.valueOf(param.get("team_name")).trim();
+		// db에 동일한 팀명이 있을경우 수정 불가
+		Team team = this.teamDetail(team_name);
+		if (team == null) {
+			result = teamDAO.teamUpdate(param);
+		} else {
+			result = 0;
+		}
+		HashMap<String, Object> hashMap = resultData(result);
+		return hashMap;
+	}
+
+	// team(팀) 삭제
+	// parameter -> team_no
+	@Override
+	public HashMap<String, Object> teamDelete(int team_no) {
+		int result = 0;
+		result = teamDAO.teamDelete(team_no);
+		HashMap<String, Object> hashMap = resultData(result);
+		return hashMap;
+	}
+
+	// insert,update,delete 결과값 반환
+	public HashMap<String, Object> resultData(int result) {
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		if (result > 0) {
+			hashMap.put("result", "success");
+		} else if (result == 0) {
+			hashMap.put("result", "fail");
+		} else {
+			hashMap.put("result", "error");
+		}
+		return hashMap;
+	}
+}

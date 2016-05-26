@@ -1,0 +1,102 @@
+package com.groupware.sun.role.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.groupware.sun.common.util.Paging;
+import com.groupware.sun.role.dao.RoleDAO;
+import com.groupware.sun.role.dto.Role;
+
+@Transactional
+@Service
+public class RoleServiceImpl implements RoleService {
+
+	@Autowired
+	private RoleDAO roleDAO;
+
+	// role(권한) 등록
+	// parameter -> role_name
+	@Override
+	public HashMap<String, Object> roleRegist(String role_name) {
+		int result = 0;
+		// db에 동일한 권한명이 있을경우 등록 불가
+		Role role = this.roleDetail(role_name);
+		if (role == null) {
+			result = roleDAO.roleRegist(role_name);
+		} else {
+			result = 0;
+		}
+		HashMap<String, Object> hashMap = resultData(result);
+		return hashMap;
+	}
+
+	// role(권한) 데이터 갯수
+	// parameter -> 검색값 search_sel,search_txt
+	@Override
+	public int roleCount(HashMap<String, Object> param) {
+		return roleDAO.roleCount(param);
+	}
+
+	// role(권한) 리스트 조회
+	// parameter -> 검색값 search_sel,search_txt,startRow,endRow
+	@Override
+	public List<Role> roleGetList(Paging paging) {
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		hashMap.put("startRow", paging.getStartRow());
+		hashMap.put("endRow", paging.getEndRow());
+		hashMap.put("search_sel", paging.getSearch_sel());
+		hashMap.put("search_txt", paging.getSearch_txt());
+		return roleDAO.roleGetList(hashMap);
+	}
+
+	// role(권한) 상세 조회
+	// parameter -> role_name
+	@Override
+	public Role roleDetail(String role_name) {
+		return roleDAO.roleDetail(role_name);
+	}
+
+	// role(권한) 수정
+	// parameter -> role_no,role_name
+	@Override
+	public HashMap<String, Object> roleUpdate(HashMap<String, Object> param) {
+		int result = 0;
+		String role_name = String.valueOf(param.get("role_name")).trim();
+		// db에 동일한 권한명이 있을경우 수정 불가
+		Role role = this.roleDetail(role_name);
+		if (role == null) {
+			result = roleDAO.roleUpdate(param);
+		} else {
+			result = 0;
+		}
+		HashMap<String, Object> hashMap = resultData(result);
+		return hashMap;
+	}
+
+	// role(권한) 삭제
+	// parameter -> role_no
+	@Override
+	public HashMap<String, Object> roleDelete(int role_no) {
+		int result = 0;
+		result = roleDAO.roleDelete(role_no);
+		HashMap<String, Object> hashMap = resultData(result);
+		return hashMap;
+	}
+
+	// insert,update,delete 결과값 반환
+	public HashMap<String, Object> resultData(int result) {
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		if (result > 0) {
+			hashMap.put("result", "success");
+		} else if (result == 0) {
+			hashMap.put("result", "fail");
+		} else {
+			hashMap.put("result", "error");
+		}
+		return hashMap;
+	}
+}

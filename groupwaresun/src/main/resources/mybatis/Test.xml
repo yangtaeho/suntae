@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="test">
+	<select id="testList" resultType="Test" parameterType="java.util.HashMap">
+		select * from (
+		select rownum rnum,m.test_no,m.test_name
+		from(
+		select *
+		from test where 1=1
+		<if test="search_name!=null">
+			<choose>
+				<when test="search_name == 'test_name' and search_text !=''">
+					and test_name like '%' || #{search_text} || '%'
+				</when>
+			</choose>
+		</if>
+		order by test_no desc) m) 
+ 		<![CDATA[
+         where rnum >= #{startRow} and rnum <= #{endRow} 
+		]]>
+	</select>
+
+	<select id="testCount" resultType="Integer">
+		select count(test_no) from test
+		<if test="search_name!=null">
+			<where>
+				<choose>
+					<when test="search_name='test_name' and search_text!=''">
+						test_name like '%' || #{search_text} || '%'
+					</when>
+				</choose>
+			</where>
+		</if>
+	</select>
+
+	<insert id="addTest" parameterType="java.util.HashMap">
+		insert into
+		test(test_no,test_name) values
+		(#{test_no},#{test_name})
+	</insert>
+</mapper>

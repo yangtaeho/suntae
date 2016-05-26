@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="position">
+	
+	<insert id="positionRegist" parameterType="String">
+		insert into position(position_no,position_name)
+		values(position_seq.nextval,#{position_name})
+	</insert>
+
+	<select id="positionDetail" parameterType="String" resultType="Position">
+		select position_no,position_name from position 
+		where position_name = #{position_name}
+	</select>
+
+	<select id="positionCount" resultType="Integer" >
+		select count(position_no) from position
+		<if test="search_sel!=null">
+			<where>
+				<choose>
+					<when test="search_sel='position_name' and search_txt!=''">
+						position_name like '%' || #{search_txt} || '%'
+					</when>
+				</choose>
+			</where>
+		</if>
+	</select>
+	
+	<select id="positionList" resultType="Position" parameterType="java.util.HashMap">
+		select position_no,position_name from (
+		select rownum rnum,d.position_no,d.position_name
+		from(
+		select *
+		from position where 1=1
+		<if test="search_sel!=null">
+			<choose>
+				<when test="search_sel == 'position_name' and search_txt !=''">
+					and position_name like '%' || #{search_txt} || '%'
+				</when>
+			</choose>
+		</if>
+		order by position_no desc) d) 
+ 		<![CDATA[
+         where rnum >= #{startRow} and rnum <= #{endRow} 
+		]]>
+	</select>	
+	
+	<update id="positionUpdate"  parameterType="java.util.HashMap">
+		update position set position_name = #{position_name}
+		where position_no = #{position_no}
+	</update>
+
+	<delete id="positionDelete">
+		delete from position 
+		where position_no = #{position_no}
+	</delete>
+</mapper>

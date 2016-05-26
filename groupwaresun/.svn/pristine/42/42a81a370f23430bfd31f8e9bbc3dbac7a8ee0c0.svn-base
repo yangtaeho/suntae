@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="team">
+	
+	<insert id="teamRegist" parameterType="String">
+		insert into team(team_no,team_name)
+		values(team_seq.nextval,#{team_name})
+	</insert>
+
+	<select id="teamDetail" parameterType="String" resultType="Team">
+		select team_no,team_name from team 
+		where team_name = #{team_name}
+	</select>
+
+	<select id="teamCount" resultType="Integer" >
+		select count(team_no) from team
+		<if test="search_sel!=null">
+			<where>
+				<choose>
+					<when test="search_sel='team_name' and search_txt!=''">
+						team_name like '%' || #{search_txt} || '%'
+					</when>
+				</choose>
+			</where>
+		</if>
+	</select>
+	
+	<select id="teamList" resultType="Team" parameterType="java.util.HashMap">
+		select team_no,team_name from (
+		select rownum rnum,d.team_no,d.team_name
+		from(
+		select *
+		from team where 1=1
+		<if test="search_sel!=null">
+			<choose>
+				<when test="search_sel == 'team_name' and search_txt !=''">
+					and team_name like '%' || #{search_txt} || '%'
+				</when>
+			</choose>
+		</if>
+		order by team_no desc) d) 
+		<if test="startRow>0 and endRow>0">
+	 		<![CDATA[
+	         where rnum >= #{startRow} and rnum <= #{endRow} 
+			]]>
+		</if>
+	</select>	
+	
+	<update id="teamUpdate"  parameterType="java.util.HashMap">
+		update team set team_name = #{team_name}
+		where team_no = #{team_no}
+	</update>
+
+	<delete id="teamDelete">
+		delete from team 
+		where team_no = #{team_no}
+	</delete>
+</mapper>

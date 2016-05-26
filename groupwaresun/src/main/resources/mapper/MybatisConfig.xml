@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+	<typeAliases>
+		<!-- 테스트 -->
+		<typeAlias type="com.groupware.sun.test.Test" alias="Test" />
+		<!--  권한 -->
+		<typeAlias type="com.groupware.sun.role.dto.Role" alias="Role"/>
+		<!-- 부서 -->
+		<typeAlias type="com.groupware.sun.department.dto.Department" alias="Department"/>
+		<!-- 팀 -->
+		<typeAlias type="com.groupware.sun.team.dto.Team" alias="Team"/>
+		<!-- 직급 -->
+		<typeAlias type="com.groupware.sun.position.dto.Position" alias="Position"/>
+		<!-- 직원상태 -->
+		<typeAlias type="com.groupware.sun.employee_status.dto.Employee_status" alias="Employee_status"/>
+		<!--  직원 -->
+		<typeAlias type="com.groupware.sun.employee.dto.Employee" alias="Employee"/>
+		<!--  사이드메뉴(ui단) -->
+		<typeAlias type="com.groupware.sun.common.util.SideMenu" alias="SideMenu"/>
+	</typeAliases>
+
+	<mappers>
+		<!-- 테스트 -->
+		<mapper resource="mybatis/Test.xml" />
+		<!--  권한 -->
+		<mapper resource="mybatis/Role.xml"/>
+		<!-- 부서 -->
+		<mapper resource="mybatis/Department.xml"/>
+		<!-- 팀 -->
+		<mapper resource="mybatis/Team.xml"/>
+		<!-- 직급 -->
+		<mapper resource="mybatis/Position.xml"/>
+		<!-- 직원상태 -->
+		<mapper resource="mybatis/Employee_status.xml"/>
+		<!--  직원 -->
+		<mapper resource="mybatis/Employee.xml"/>
+		<!--  로그인/로그아웃 -->
+		<mapper resource="mybatis/Login.xml"/>
+		<!--  사이드메뉴(ui단) -->
+		<mapper resource="mybatis/Side_menu.xml"/>
+	</mappers>
+</configuration>

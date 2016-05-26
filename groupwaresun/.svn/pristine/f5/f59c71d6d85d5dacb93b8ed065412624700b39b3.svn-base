@@ -1,0 +1,102 @@
+package com.groupware.sun.department.service;
+
+import java.util.HashMap;
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.groupware.sun.common.util.Paging;
+import com.groupware.sun.department.dao.DepartmentDAO;
+import com.groupware.sun.department.dto.Department;
+
+@Transactional
+@Service
+public class DepartmentServiceImpl implements DepartmentService {
+
+	@Autowired
+	private DepartmentDAO departmentDAO;
+
+	// department(부서) 등록
+	// parameter -> department_name
+	@Override
+	public HashMap<String, Object> departmentRegist(String department_name) {
+		int result = 0;
+		// db에 동일한 부서명이 있을경우 등록 불가
+		Department department = this.departmentDetail(department_name);
+		if (department == null) {
+			result = departmentDAO.departmentRegist(department_name);
+		} else {
+			result = 0;
+		}
+		HashMap<String, Object> hashMap = resultData(result);
+		return hashMap;
+	}
+
+	// department(부서) 데이터 갯수
+	// parameter -> 검색값 search_sel,search_txt
+	@Override
+	public int departmentCount(HashMap<String, Object> param) {
+		return departmentDAO.departmentCount(param);
+	}
+
+	// department(부서) 리스트 조회
+	// parameter -> 검색값 search_sel,search_txt,startRow,endRow
+	@Override
+	public List<Department> departmentGetList(Paging paging) {
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		hashMap.put("startRow", paging.getStartRow());
+		hashMap.put("endRow", paging.getEndRow());
+		hashMap.put("search_sel", paging.getSearch_sel());
+		hashMap.put("search_txt", paging.getSearch_txt());
+		return departmentDAO.departmentGetList(hashMap);
+	}
+
+	// department(부서) 상세 조회
+	// parameter -> department_name
+	@Override
+	public Department departmentDetail(String department_name) {
+		return departmentDAO.departmentDetail(department_name);
+	}
+
+	// department(부서) 수정
+	// parameter -> department_no,department_name
+	@Override
+	public HashMap<String, Object> departmentUpdate(HashMap<String, Object> param) {
+		int result = 0;
+		String department_name = String.valueOf(param.get("department_name")).trim();
+		// db에 동일한 부서명이 있을경우 수정 불가
+		Department department = this.departmentDetail(department_name);
+		if (department == null) {
+			result = departmentDAO.departmentUpdate(param);
+		} else {
+			result = 0;
+		}
+		HashMap<String, Object> hashMap = resultData(result);
+		return hashMap;
+	}
+
+	// department(부서) 삭제
+	// parameter -> department_no
+	@Override
+	public HashMap<String, Object> departmentDelete(int department_no) {
+		int result = 0;
+		result = departmentDAO.departmentDelete(department_no);
+		HashMap<String, Object> hashMap = resultData(result);
+		return hashMap;
+	}
+
+	// insert,update,delete 결과값 반환
+	public HashMap<String, Object> resultData(int result) {
+		HashMap<String, Object> hashMap = new HashMap<String, Object>();
+		if (result > 0) {
+			hashMap.put("result", "success");
+		} else if (result == 0) {
+			hashMap.put("result", "fail");
+		} else {
+			hashMap.put("result", "error");
+		}
+		return hashMap;
+	}
+}

@@ -1,0 +1,12 @@
+package com.groupware.sun.test;
+
+import java.util.HashMap;
+import java.util.List;
+
+public interface TestDAO {
+
+	public List<Test> getTestList(HashMap<String, Object> hashMap);
+
+	public int testCount(HashMap<String, Object> param);
+
+}

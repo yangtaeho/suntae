@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="employee">
+
+	<insert id="employeeRegist" parameterType="java.util.HashMap" >
+	INSERT
+	INTO    employee
+	        (
+	                employee_no,
+	                role_no,
+	                employee_status_no,
+	                employee_name,
+	                employee_id,
+	                employee_pw,
+	                employee_hp,
+	                employee_email,
+	                department_no,
+	                team_no,
+	                position_no,
+	                employee_ip,
+	                employee_activity_no
+	        )
+	        VALUES
+	        (
+	                employee_seq.nextval,
+	                #{role_no},
+	                #{employee_status_no},
+	                #{employee_name},
+	                #{employee_id},
+	                #{employee_pw},
+	                #{employee_hp},
+	                #{employee_email},
+	                #{department_no},
+	                #{team_no},
+	                #{position_no},
+	                #{employee_ip},
+	                #{employee_activity_no}
+	        )
+	</insert>
+	
+	<select id="employeeCount" resultType="Integer" parameterType="java.util.HashMap">
+		select count(employee_no) from employee
+		<where>
+			<choose>
+				<when test="search_sel=='employee_name' and search_txt!='' ">
+					employee_name like '%' || #{search_txt} || '%'
+				</when>
+				<when test="search_sel =='employee_id' and search_txt !=''">
+					and employee_id like '%' || #{search_txt} || '%'
+				</when>					
+			</choose>
+		</where>
+	</select>
+	
+	<select id="employeeList" resultMap="employeeListResultMap" parameterType="java.util.HashMap">
+		SELECT * 
+		FROM   (SELECT ROWNUM rnum, 
+		               e.employee_no, 
+		               e.employee_name, 
+		               e.employee_id, 
+		               e.employee_hp, 
+		               e.employee_email, 
+		               e.employee_ip, 
+		               e.employee_activity_no, 
+		               e.employee_regist_date, 
+		               e.role_no, 
+		               e.role_name, 
+		               e.department_no, 
+		               e.department_name, 
+		               e.team_no, 
+		               e.team_name, 
+		               e.position_no, 
+		               e.position_name, 
+		               e.employee_status_no, 
+		               e.employee_status_name 
+		        FROM   (SELECT e.employee_no, 
+		                       e.employee_name, 
+		                       e.employee_id, 
+		                       e.employee_hp, 
+		                       e.employee_email, 
+		                       e.employee_ip, 
+		                       e.employee_activity_no, 
+		                       e.employee_regist_date, 
+		                       r.role_no, 
+		                       r.role_name, 
+		                       d.department_no, 
+		                       d.department_name, 
+		                       t.team_no, 
+		                       t.team_name, 
+		                       p.position_no, 
+		                       p.position_name, 
+		                       es.employee_status_no, 
+		                       es.employee_status_name 
+		                FROM   ((((employee e 
+		                           left join ROLE r 
+		                                  ON e.role_no = r.role_no) 
+		                          left join department d 
+		                                 ON e.department_no = d.department_no ) 
+		                         left join team t 
+		                                ON e.team_no = t.team_no ) 
+		                        left join position p 
+		                               ON e.position_no = p.position_no) 
+		                       left join employee_status es 
+		                              ON e.employee_status_no = es.employee_status_no 
+		                              where 1=1
+						<if test="search_sel!=null">
+							<choose>
+								<when test="search_sel =='employee_name' and search_txt !=''">
+									and employee_name like '%' || #{search_txt} || '%'
+								</when>
+								<when test="search_sel =='employee_id' and search_txt !=''">
+									and employee_id like '%' || #{search_txt} || '%'
+								</when>								
+							</choose>
+						</if>		                              
+		                ORDER  BY e.employee_no DESC)e) 
+		                <![CDATA[
+							where rnum >= #{startRow} and rnum <= #{endRow}
+						]]>
+	</select>	
+
+	<select id="employeeDetail" resultMap="employeeListResultMap" parameterType="java.util.HashMap">
+		SELECT e.employee_no, 
+		       e.employee_name, 
+		       e.employee_id, 
+		       e.employee_hp, 
+		       e.employee_email, 
+		       e.employee_ip, 
+		       e.employee_activity_no, 
+		       e.employee_regist_date, 
+		       r.role_no, 
+		       r.role_name, 
+		       d.department_no, 
+		       d.department_name, 
+		       t.team_no, 
+		       t.team_name, 
+		       p.position_no, 
+		       p.position_name, 
+		       es.employee_status_no, 
+		       es.employee_status_name 
+		FROM   ((((employee e 
+		           left join ROLE r 
+		                  ON e.role_no = r.role_no) 
+		          left join department d 
+		                 ON e.department_no = d.department_no ) 
+		         left join team t 
+		                ON e.team_no = t.team_no ) 
+		        left join position p 
+		               ON e.position_no = p.position_no) 
+		       left join employee_status es 
+		              ON e.employee_status_no = es.employee_status_no 
+		WHERE  employee_id = #{employee_id} 
+		       AND employee_no = #{employee_no}
+	</select>
+	
+	<update id="employeeUpdate" parameterType="java.util.HashMap">
+		UPDATE employee
+		SET     
+		        employee_hp          = #{employee_hp},
+		        employee_email       = #{employee_email},
+		        role_no              = #{role_no},
+		        employee_status_no   = #{employee_status_no},
+		        department_no        = #{department_no},
+		        team_no              = #{team_no},
+		        position_no          = #{position_no},
+		        employee_activity_no = #{employee_activity_no}
+		WHERE   employee_no          = #{employee_no}
+		    AND employee_id          = #{employee_id}		
+	</update>
+	
+	<delete id="employeeDelete" parameterType="java.util.HashMap">
+		delete from employee 
+		where employee_no = #{employee_no} and employee_id = #{employee_id}
+	</delete>
+	
+	<resultMap type="Employee" id="employeeListResultMap">
+		<id column="employee_no" property="employee_no" />
+		<id column="employee_name" property="employee_name" />
+		<id column="employee_id" property="employee_id" />
+		<id column="employee_hp" property="employee_hp" />
+		<id column="employee_email" property="employee_email" />
+		<id column="employee_ip" property="employee_ip" />
+		<id column="employee_activity_no" property="employee_activity_no" />
+		<id column="employee_regist_date" property="employee_regist_date" />
+		<association property="role" resultMap="roleResultMap" />
+		<association property="department" resultMap="departmentResultMap" />
+		<association property="team" resultMap="teamResultMap"/>
+		<association property="position"  resultMap="positionResultMap"/>
+		<association property="employee_status"  resultMap="employee_statusResultMap"/>		
+	</resultMap>
+	<resultMap type="Role" id="roleResultMap">
+		<id column="role_no" property="role_no"/>
+		<id column="role_name" property="role_name"/>
+	</resultMap>
+		
+	<resultMap type="Employee_status" id="employee_statusResultMap">
+		<id column ="employee_status_no" property="employee_status_no"/>
+		<id column="employee_status_name" property="employee_status_name"/>
+	</resultMap>
+		
+	<resultMap type="Department" id="departmentResultMap">
+		<id column="department_no" property="department_no"/>
+		<id column="department_name" property="department_name"/>
+	</resultMap>
+		
+	<resultMap type="Team" id="teamResultMap">
+		<id column="team_no" property="team_no"/>
+		<id column="team_name" property="team_name"/>
+	</resultMap>
+		
+	<resultMap type="Position" id="positionResultMap">
+		<id column="position_no" property="position_no"/>
+		<id column="position_name" property="position_name"/>
+	</resultMap>		
+</mapper>

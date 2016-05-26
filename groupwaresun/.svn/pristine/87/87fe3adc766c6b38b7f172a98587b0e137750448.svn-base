@@ -1,0 +1,99 @@
+package com.groupware.sun.common.util;
+
+public class SideMenu {
+
+	private int side_menu_no;
+	private int branch_tree_no;
+	private String branch_tree_name;
+	private int terminal_tree_no;
+	private String terminal_tree_name;
+
+	public SideMenu() {
+	}
+
+	public SideMenu(int side_menu_no, int branch_tree_no, String branch_tree_name, int terminal_tree_no,
+			String terminal_tree_name) {
+		super();
+		this.side_menu_no = side_menu_no;
+		this.branch_tree_no = branch_tree_no;
+		this.branch_tree_name = branch_tree_name;
+		this.terminal_tree_no = terminal_tree_no;
+		this.terminal_tree_name = terminal_tree_name;
+	}
+
+	public int getSide_menu_no() {
+		return side_menu_no;
+	}
+
+	public void setSide_menu_no(int side_menu_no) {
+		this.side_menu_no = side_menu_no;
+	}
+
+	public int getBranch_tree_no() {
+		return branch_tree_no;
+	}
+
+	public void setBranch_tree_no(int branch_tree_no) {
+		this.branch_tree_no = branch_tree_no;
+	}
+
+	public String getBranch_tree_name() {
+		return branch_tree_name;
+	}
+
+	public void setBranch_tree_name(String branch_tree_name) {
+		this.branch_tree_name = branch_tree_name;
+	}
+
+	public int getTerminal_tree_no() {
+		return terminal_tree_no;
+	}
+
+	public void setTerminal_tree_no(int terminal_tree_no) {
+		this.terminal_tree_no = terminal_tree_no;
+	}
+
+	public String getTerminal_tree_name() {
+		return terminal_tree_name;
+	}
+
+	public void setTerminal_tree_name(String terminal_tree_name) {
+		this.terminal_tree_name = terminal_tree_name;
+	}
+
+	@Override
+	public String toString() {
+		return "SideMenu [side_menu_no=" + side_menu_no + ", branch_tree_no=" + branch_tree_no + ", branch_tree_name="
+				+ branch_tree_name + ", terminal_tree_no=" + terminal_tree_no + ", terminal_tree_name="
+				+ terminal_tree_name + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + side_menu_no;
+		result = prime * result + ((terminal_tree_name == null) ? 0 : terminal_tree_name.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SideMenu other = (SideMenu) obj;
+		if (side_menu_no != other.side_menu_no)
+			return false;
+		if (terminal_tree_name == null) {
+			if (other.terminal_tree_name != null)
+				return false;
+		} else if (!terminal_tree_name.equals(other.terminal_tree_name))
+			return false;
+		return true;
+	}
+
+}

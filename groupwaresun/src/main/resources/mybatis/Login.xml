@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="login">
+
+	<select id="employeeLogin" parameterType="java.util.HashMap" resultType="Employee">
+		select employee_no,employee_name,employee_id,employee_hp,employee_email from employee 
+		where employee_id = #{employee_id} and employee_pw = #{employee_pw}
+	</select>
+	
+</mapper>

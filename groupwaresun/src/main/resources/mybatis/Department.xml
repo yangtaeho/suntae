@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper PUBLIC "-//ibatis.apache.org//DTD Mapper 3.0//EN" 
+"http://ibatis.apache.org/dtd/ibatis-3-mapper.dtd">
+
+<mapper namespace="department">
+
+	<insert id="departmentRegist" parameterType="String">
+		insert into
+		department(department_no,department_name)
+		values(department_seq.nextval,#{department_name})
+	</insert>
+
+	<select id="departmentDetail" parameterType="String" resultType="Department">
+		select department_no,department_name from department
+		where department_name = #{department_name}
+	</select>
+
+	<select id="departmentCount" resultType="Integer">
+		select count(department_no) from department
+		<if test="search_sel!=null">
+			<where>
+				<choose>
+					<when test="search_sel='department_name' and search_txt!=''">
+						department_name like '%' || #{search_txt} || '%'
+					</when>
+				</choose>
+			</where>
+		</if>
+	</select>
+
+	<select id="departmentList" resultType="Department"
+		parameterType="java.util.HashMap">
+		select department_no,department_name from (
+		select rownum
+		rnum,d.department_no,d.department_name
+		from(
+		select *
+		from department
+		where 1=1
+		<if test="search_sel!=null">
+			<choose>
+				<when test="search_sel == 'department_name' and search_txt !=''">
+					and department_name like '%' || #{search_txt} || '%'
+				</when>
+			</choose>
+		</if>
+		order by department_no desc) d)
+		<if test="startRow>0 and endRow>0">
+	 		<![CDATA[
+	         where rnum >= #{startRow} and rnum <= #{endRow} 
+			]]>
+		</if>
+	</select>
+
+	<update id="departmentUpdate" parameterType="java.util.HashMap">
+		update department
+		set department_name = #{department_name}
+		where department_no =
+		#{department_no}
+	</update>
+
+	<delete id="departmentDelete">
+		delete from department
+		where department_no = #{department_no}
+	</delete>
+</mapper>
